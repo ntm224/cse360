@@ -44,27 +44,32 @@ try:
         # This will run perpetually, and operate on a separate thread.
         is_running = streaming_client.run()
 
-        start = time.time()
+        timer = 0
+
         while (is_running):
             if robot_id in positions:
                 # last position
                 print('Last position', positions[robot_id], ' rotation', rotations[robot_id])
 
-                Ax=math.cos((time.time()-start))
-                Ay=math.sin((time.time()-start))
+                Ax=math.cos((timer))-0.7
+                Ay=math.sin((timer))-2
 
-                v = math.sqrt((Ax)**2 + (Ay)**2)
-                x = math.sqrt((positions[robot_id][0])**2 + (positions[robot_id][1])**2)
+                angle = math.degrees(math.atan2(Ay, Ax)) - rotations[robot_id]
+                omega = 6*math.degrees(math.atan2(math.sin(angle),math.cos(angle)))
+
+                v = 600*math.sqrt((Ax)**2 + (Ay)**2)
                 
-                u = np.array([400*(v-x), 400*(v+x)])
+                u = np.array([(v-omega), (v+omega)])
                 u[u > 1500] = 1500
                 u[u < -1500] = -1500
                 # Send control input to the motors
                 print('motors: ', u[0], u[1])
+                print(Ax, '   ', Ay)
                 command = 'CMD_MOTOR#%d#%d#%d#%d\n'%(u[0], u[0], u[1], u[1])
                 s.send(command.encode('utf-8'))
 
-                time.sleep(.01)
+                timer = timer + .1
+                time.sleep(.1)
 
 except KeyboardInterrupt:
     # STOP
