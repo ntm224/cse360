@@ -22,8 +22,8 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
     
-    rows = gray.shape[0]
-    circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, rows / 8,
+    rows = mask.shape[0]
+    circles = cv2.HoughCircles(mask, cv2.HOUGH_GRADIENT, 1, rows / 8,
                                param1=100, param2=30,
                                minRadius=1, maxRadius=100)
     
